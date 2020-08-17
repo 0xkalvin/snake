@@ -12,12 +12,12 @@ Game *setup_game()
 
     int snake_head_initial_x = WIDTH / 2;
     int snake_head_initial_y = HEIGHT / 2;
-    game->snake->head = create_coordinate(snake_head_initial_x, snake_head_initial_y, SNAKE);
+    game->snake->head = create_coordinate(snake_head_initial_x, snake_head_initial_y);
 
     int fruit_initial_x = abs(rand() % WIDTH - 1);
     int fruit_initial_y = abs(rand() % HEIGHT - 1);
 
-    game->fruit = create_coordinate(fruit_initial_x, fruit_initial_y, FRUIT);
+    game->fruit = create_coordinate(fruit_initial_x, fruit_initial_y);
 
     return game;
 }
@@ -26,6 +26,10 @@ void render_game(Game *game)
 {
 
     system("clear");
+
+    printf("\n============================== SNAKE GAME =====================================\n\n");
+
+    printf("\tSCORE %d \n\n", game->score);
 
     for (int i = 0; i < WIDTH; i++)
     {
@@ -48,11 +52,29 @@ void render_game(Game *game)
             }
             else if (game->snake->head->x == j && game->snake->head->y == i)
             {
-                printf("%c", 'O');
+                if (game->is_over)
+                {
+                    printf("%c", 'X');
+                }
+                else
+                {
+                    printf("%c", 'O');
+                }
             }
             else
             {
-                printf("%c", ' ');
+                int has_print_snake = 0;
+
+                for (int k = 0; k < game->snake->current_tail_size; k++)
+                {
+                    if (game->snake->tail[k]->x == j && game->snake->tail[k]->y == i)
+                    {
+                        printf("%c", 'o');
+                        has_print_snake = 1;
+                    }
+                }
+                if (!has_print_snake)
+                    printf("%c", ' ');
             }
         }
         printf("\n");
@@ -63,11 +85,29 @@ void render_game(Game *game)
         printf("%c", '#');
     }
 
-    printf("\n Score %d \n", game->score);
+    for (int i = 0; i < game->snake->current_tail_size; i++)
+    {
+        printf("\n%d %d", game->snake->tail[i]->x, game->snake->tail[i]->y);
+    }
 }
 
 void update_state(Game *game)
 {
+
+    game->snake->tail[0] = create_coordinate(game->snake->head->x, game->snake->head->y);
+    Coordinate *previous = create_coordinate(game->snake->tail[0]->x, game->snake->tail[0]->y);
+
+    for (int i = 1; i < game->snake->current_tail_size; i++)
+    {
+
+        Coordinate *current = create_coordinate(game->snake->tail[i]->x, game->snake->tail[i]->y);
+
+        game->snake->tail[i]->x = previous->x;
+        game->snake->tail[i]->y = previous->y;
+
+        previous->x = current->x;
+        previous->y = current->y;
+    }
 
     /*  Updates direction changing */
     switch (game->snake->direction)
@@ -86,12 +126,24 @@ void update_state(Game *game)
         break;
     }
 
-    /*  Handles collision */
+    /*  Handles fruit collision */
     if (game->fruit->x == game->snake->head->x && game->fruit->y == game->snake->head->y)
     {
-        game->fruit->x  = abs(rand() % WIDTH - 1);
+        game->fruit->x = abs(rand() % WIDTH - 1);
         game->fruit->y = abs(rand() % HEIGHT - 1);
         game->score += 10;
+
+        game->snake->tail[game->snake->current_tail_size] =
+            create_coordinate(5, 5);
+
+        game->snake->current_tail_size++;
+    }
+
+    /*  Handles wall collision */
+    if (game->snake->head->x == 0 || game->snake->head->x == WIDTH - 1 ||
+        game->snake->head->y < 0 || game->snake->head->y >= HEIGHT)
+    {
+        game->is_over = 1;
     }
 }
 
@@ -123,40 +175,4 @@ void process_input(Game *game)
             break;
         }
     }
-}
-
-int kbhit(void)
-{
-    struct termios oldt, newt;
-    int ch;
-    int oldf;
-
-    tcgetattr(STDIN_FILENO, &oldt);
-    newt = oldt;
-    newt.c_lflag &= ~(ICANON | ECHO);
-    tcsetattr(STDIN_FILENO, TCSANOW, &newt);
-    oldf = fcntl(STDIN_FILENO, F_GETFL, 0);
-    fcntl(STDIN_FILENO, F_SETFL, oldf | O_NONBLOCK);
-
-    ch = getchar();
-
-    tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
-    fcntl(STDIN_FILENO, F_SETFL, oldf);
-
-    if (ch != EOF)
-    {
-        ungetc(ch, stdin);
-        return 1;
-    }
-
-    return 0;
-}
-
-char getch()
-{
-    char c;
-    system("stty raw");
-    c = getchar();
-    system("stty sane");
-    return (c);
 }

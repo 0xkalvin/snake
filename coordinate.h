@@ -3,17 +3,11 @@
 
 #include <stdlib.h>
 
-enum {
-    EMPTY,
-    SNAKE,
-    FRUIT
-};
-
 typedef struct Coordinate
 {
-    int x, y, state;
+    int x, y;
 } Coordinate;
 
-Coordinate* create_coordinate(int x, int y, int state);
+Coordinate* create_coordinate(int x, int y);
 
 #endif

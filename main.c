@@ -13,5 +13,7 @@ int main(void)
         usleep(100000);
     }
 
+    free(game);
+
     return 0;
 }

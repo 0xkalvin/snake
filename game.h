@@ -4,15 +4,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
-#include <termios.h>
-#include <fcntl.h>
-#include <unistd.h>
 
 #include "snake.h"
 #include "coordinate.h"
+#include "helper.h"
 
-#define WIDTH 100
-#define HEIGHT 30
+#define WIDTH 80
+#define HEIGHT 20
 
 typedef struct Game
 {
