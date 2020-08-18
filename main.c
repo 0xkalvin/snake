@@ -6,13 +6,7 @@ int main(void)
     
     initialize_menu(game);
 
-    while (!game->is_over)
-    {
-        render_game(game);
-        process_input(game);
-        update_state(game);
-        usleep(100000);
-    }
+    run_game(game);
 
     free(game);
 

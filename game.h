@@ -19,7 +19,7 @@ enum {
 
 typedef struct Game
 {
-    int is_over;
+    int is_over, should_run;
     int score;
     int chosen_mode;
     Snake* snake;
@@ -30,7 +30,9 @@ typedef struct Game
 Game* setup_game();
 void initialize_menu();
 void render_game(Game* game);
+void render_game_over_screen(Game* game);
 void process_input(Game* game);
 void update_state(Game* game);
+void run_game(Game* game);
 
 #endif

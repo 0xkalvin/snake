@@ -7,6 +7,7 @@ Game *setup_game()
     Game *game = (Game *)malloc(sizeof(Game));
 
     game->is_over = game->score = 0;
+    game->should_run = 1;
 
     game->snake = create_snake();
 
@@ -81,6 +82,11 @@ void render_game(Game *game)
     {
         for (int j = 0; j < WIDTH; j++)
         {
+            if (game->is_over && i == HEIGHT / 2 && j == WIDTH / 2 - 10)
+            {
+                render_game_over_screen(game);
+            }
+
             if (j == 0 || j == WIDTH - 1)
             {
                 printf("%c", '#');
@@ -91,14 +97,7 @@ void render_game(Game *game)
             }
             else if (game->snake->head->x == j && game->snake->head->y == i)
             {
-                if (game->is_over)
-                {
-                    printf("%c", 'X');
-                }
-                else
-                {
-                    printf("%c", 'O');
-                }
+                printf("%c", 'O');
             }
             else
             {
@@ -125,8 +124,35 @@ void render_game(Game *game)
     }
 }
 
+void render_game_over_screen(Game *game)
+{
+    printf("GAME OVER");
+}
+
 void update_state(Game *game)
 {
+    /*  Handles fruit collision */
+    if (game->fruit->x == game->snake->head->x && game->fruit->y == game->snake->head->y)
+    {
+        game->fruit->x = abs(rand() % WIDTH - 1);
+        game->fruit->y = abs(rand() % HEIGHT - 1);
+        game->score += 10;
+
+        game->snake->tail[game->snake->current_tail_size] =
+            create_coordinate(5, 5);
+
+        game->snake->current_tail_size++;
+    }
+
+    /*  Handles wall collision */
+    if (game->snake->head->x == 0 || game->snake->head->x == WIDTH - 1 ||
+        game->snake->head->y < 0 || game->snake->head->y >= HEIGHT)
+    {
+        game->is_over = 1;
+        return;
+    }
+
+    /*  Updates tail segments position  */
     Coordinate *previous;
 
     if (game->snake->tail[0])
@@ -240,5 +266,24 @@ void process_input(Game *game)
             game->is_over = 1;
             break;
         }
+    }
+}
+
+void run_game(Game *game)
+{
+
+    while (game->should_run)
+    {
+        while (!game->is_over)
+        {
+            render_game(game);
+            process_input(game);
+            update_state(game);
+            usleep(100000);
+        }
+        
+        render_game(game);
+
+        game->should_run = 0;
     }
 }
