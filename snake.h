@@ -25,6 +25,5 @@ typedef struct Snake
 } Snake;
 
 Snake* create_snake();
-void print_snake(Snake* snake);
 
 #endif

@@ -84,11 +84,6 @@ void render_game(Game *game)
     {
         printf("%c", '#');
     }
-
-    for (int i = 0; i < game->snake->current_tail_size; i++)
-    {
-        printf("\n%d %d", game->snake->tail[i]->x, game->snake->tail[i]->y);
-    }
 }
 
 void update_state(Game *game)

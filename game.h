@@ -26,8 +26,4 @@ void render_game(Game* game);
 void process_input(Game* game);
 void update_state(Game* game);
 
-int kbhit(void);
-char getch();
-
-
 #endif

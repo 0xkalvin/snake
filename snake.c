@@ -18,11 +18,3 @@ Snake *create_snake()
 
     return snake;
 }
-
-void print_snake(Snake *snake){
-
-
-    
-
-
-}
