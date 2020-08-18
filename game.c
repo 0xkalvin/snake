@@ -93,9 +93,14 @@ void render_game(Game *game)
 
 void update_state(Game *game)
 {
+    Coordinate *previous;
+    
+    if (game->snake->tail[0])
+    {
+        previous = create_coordinate(game->snake->tail[0]->x, game->snake->tail[0]->y);
+    }
 
     game->snake->tail[0] = create_coordinate(game->snake->head->x, game->snake->head->y);
-    Coordinate *previous = create_coordinate(game->snake->tail[0]->x, game->snake->tail[0]->y);
 
     for (int i = 1; i < game->snake->current_tail_size; i++)
     {
