@@ -2,8 +2,9 @@
 
 int main(void)
 {
-
     Game *game = setup_game();
+    
+    initialize_menu(game);
 
     while (!game->is_over)
     {
