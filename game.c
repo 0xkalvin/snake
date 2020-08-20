@@ -1,13 +1,18 @@
 #include "game.h"
 
-Game *setup_game()
+Game *alloc_game()
+{
+    Game *game = (Game *)malloc(sizeof(Game));
+    game->should_run = 1;
+
+    return game;
+}
+
+void setup_game_initial_state(Game *game)
 {
     srand(time(NULL));
 
-    Game *game = (Game *)malloc(sizeof(Game));
-
     game->is_over = game->score = 0;
-    game->should_run = 1;
 
     game->snake = create_snake();
 
@@ -19,8 +24,6 @@ Game *setup_game()
     int fruit_initial_y = abs(rand() % HEIGHT - 1);
 
     game->fruit = create_coordinate(fruit_initial_x, fruit_initial_y);
-
-    return game;
 }
 
 void initialize_menu(Game *game)
@@ -126,71 +129,18 @@ void render_game(Game *game)
 
 void render_game_over_screen(Game *game)
 {
-    printf("GAME OVER");
+    
+    system("clear");
+    
+    printf("\n\n\t\t\t\tGAME OVER :(\n\n");
+
+    printf("\n\n\t\tPRESS x TO QUIT OR ANYTHING ELSE TO CONTINUE PLAYING \n\n");
+
+
 }
 
 void update_state(Game *game)
 {
-    /*  Handles fruit collision */
-    if (game->fruit->x == game->snake->head->x && game->fruit->y == game->snake->head->y)
-    {
-        game->fruit->x = abs(rand() % WIDTH - 1);
-        game->fruit->y = abs(rand() % HEIGHT - 1);
-        game->score += 10;
-
-        game->snake->tail[game->snake->current_tail_size] =
-            create_coordinate(5, 5);
-
-        game->snake->current_tail_size++;
-    }
-
-    /*  Handles wall collision */
-    if (game->snake->head->x == 0 || game->snake->head->x == WIDTH - 1 ||
-        game->snake->head->y < 0 || game->snake->head->y >= HEIGHT)
-    {
-        game->is_over = 1;
-        return;
-    }
-
-    /*  Updates tail segments position  */
-    Coordinate *previous;
-
-    if (game->snake->tail[0])
-    {
-        previous = create_coordinate(game->snake->tail[0]->x, game->snake->tail[0]->y);
-    }
-
-    game->snake->tail[0] = create_coordinate(game->snake->head->x, game->snake->head->y);
-
-    for (int i = 1; i < game->snake->current_tail_size; i++)
-    {
-
-        Coordinate *current = create_coordinate(game->snake->tail[i]->x, game->snake->tail[i]->y);
-
-        game->snake->tail[i]->x = previous->x;
-        game->snake->tail[i]->y = previous->y;
-
-        previous->x = current->x;
-        previous->y = current->y;
-    }
-
-    /*  Updates direction changing */
-    switch (game->snake->direction)
-    {
-    case LEFT:
-        game->snake->head->x--;
-        break;
-    case RIGHT:
-        game->snake->head->x++;
-        break;
-    case UP:
-        game->snake->head->y--;
-        break;
-    case DOWN:
-        game->snake->head->y++;
-        break;
-    }
-
     /*  Handles fruit collision */
     if (game->fruit->x == game->snake->head->x && game->fruit->y == game->snake->head->y)
     {
@@ -237,6 +187,45 @@ void update_state(Game *game)
             game->snake->head->y = 0;
         }
     }
+
+    /*  Updates tail segments position  */
+    Coordinate *previous;
+
+    if (game->snake->tail[0])
+    {
+        previous = create_coordinate(game->snake->tail[0]->x, game->snake->tail[0]->y);
+    }
+
+    game->snake->tail[0] = create_coordinate(game->snake->head->x, game->snake->head->y);
+
+    for (int i = 1; i < game->snake->current_tail_size; i++)
+    {
+
+        Coordinate *current = create_coordinate(game->snake->tail[i]->x, game->snake->tail[i]->y);
+
+        game->snake->tail[i]->x = previous->x;
+        game->snake->tail[i]->y = previous->y;
+
+        previous->x = current->x;
+        previous->y = current->y;
+    }
+
+    /*  Updates direction changing */
+    switch (game->snake->direction)
+    {
+    case LEFT:
+        game->snake->head->x--;
+        break;
+    case RIGHT:
+        game->snake->head->x++;
+        break;
+    case UP:
+        game->snake->head->y--;
+        break;
+    case DOWN:
+        game->snake->head->y++;
+        break;
+    }
 }
 
 void process_input(Game *game)
@@ -269,8 +258,22 @@ void process_input(Game *game)
     }
 }
 
+int should_keep_running(Game *game)
+{
+    char input;
+    scanf("%c", &input);
+
+    if(input == 'x'){
+        return 0;
+    }
+
+    return 1;
+}
+
 void run_game(Game *game)
 {
+
+    setup_game_initial_state(game);
 
     while (game->should_run)
     {
@@ -281,9 +284,16 @@ void run_game(Game *game)
             update_state(game);
             usleep(100000);
         }
-        
-        render_game(game);
 
-        game->should_run = 0;
+        render_game_over_screen(game);
+
+        if (!should_keep_running(game))
+        {
+            game->should_run = 0;
+        }
+        else
+        {
+            setup_game_initial_state(game);
+        }
     }
 }

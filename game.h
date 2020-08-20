@@ -27,7 +27,8 @@ typedef struct Game
 
 } Game;
 
-Game* setup_game();
+Game* alloc_game();
+void setup_game_initial_state(Game* game);
 void initialize_menu();
 void render_game(Game* game);
 void render_game_over_screen(Game* game);

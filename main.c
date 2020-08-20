@@ -2,7 +2,7 @@
 
 int main(void)
 {
-    Game *game = setup_game();
+    Game *game = alloc_game();
     
     initialize_menu(game);
 
