@@ -22,6 +22,45 @@ Game *setup_game()
     return game;
 }
 
+void initialize_menu(Game *game)
+{
+    system("clear");
+
+    printf("CHOOSE A MODE TO PLAY\n\n");
+    printf("1 - WITH WALLS\n");
+    printf("2 - WITH NO WALLS\n");
+    printf("3 - QUIT \n\n");
+
+    int valid_option = 0;
+    char input_char;
+
+    while (!valid_option)
+    {
+        scanf("%c", &input_char);
+
+        switch (input_char)
+        {
+
+        case '1':
+            game->chosen_mode = WITH_WALLS;
+            valid_option = 1;
+            break;
+        case '2':
+            game->chosen_mode = WITHOUT_WALLS;
+            valid_option = 1;
+            break;
+        case '3':
+            printf("Quitting...\n");
+            game->is_over = 1;
+            valid_option = 1;
+            break;
+        default:
+            printf("Please, enter a valid mode\n");
+            break;
+        }
+    }
+}
+
 void render_game(Game *game)
 {
 
@@ -89,7 +128,7 @@ void render_game(Game *game)
 void update_state(Game *game)
 {
     Coordinate *previous;
-    
+
     if (game->snake->tail[0])
     {
         previous = create_coordinate(game->snake->tail[0]->x, game->snake->tail[0]->y);
@@ -139,11 +178,38 @@ void update_state(Game *game)
         game->snake->current_tail_size++;
     }
 
-    /*  Handles wall collision */
-    if (game->snake->head->x == 0 || game->snake->head->x == WIDTH - 1 ||
-        game->snake->head->y < 0 || game->snake->head->y >= HEIGHT)
+    /* 
+    In case game mode has walls, handles wall collision. 
+    Otherwise, snake appears on the other side of the screen
+    */
+    if (game->chosen_mode == 1)
     {
-        game->is_over = 1;
+        if (game->snake->head->x == 0 || game->snake->head->x == WIDTH - 1 ||
+            game->snake->head->y < 0 || game->snake->head->y >= HEIGHT)
+        {
+            game->is_over = 1;
+        }
+    }
+    else
+    {
+
+        if (game->snake->head->x == 0)
+        {
+            game->snake->head->x = WIDTH - 1;
+        }
+        else if (game->snake->head->x == WIDTH - 1)
+        {
+            game->snake->head->x = 0;
+        }
+
+        if (game->snake->head->y == -1)
+        {
+            game->snake->head->y = HEIGHT - 1;
+        }
+        else if (game->snake->head->y == HEIGHT)
+        {
+            game->snake->head->y = 0;
+        }
     }
 }
 
