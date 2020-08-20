@@ -178,6 +178,14 @@ void update_state(Game *game)
         game->snake->current_tail_size++;
     }
 
+    /* Handles collision with its tail  */
+    for (int i = 0; i < game->snake->current_tail_size; i++)
+    {
+        if(game->snake->head->x == game->snake->tail[i]->x && game->snake->head->y == game->snake->tail[i]->y){
+            game->is_over = 1;
+        }
+    }
+    
     /* 
     In case game mode has walls, handles wall collision. 
     Otherwise, snake appears on the other side of the screen
