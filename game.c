@@ -26,6 +26,7 @@ void initialize_menu(Game *game)
 {
     system("clear");
 
+    printf("\n============================== SNAKE GAME =====================================\n\n");
     printf("CHOOSE A MODE TO PLAY\n\n");
     printf("1 - WITH WALLS\n");
     printf("2 - WITH NO WALLS\n");
@@ -173,7 +174,7 @@ void update_state(Game *game)
         game->score += 10;
 
         game->snake->tail[game->snake->current_tail_size] =
-            create_coordinate(5, 5);
+            create_coordinate(0, 0);
 
         game->snake->current_tail_size++;
     }
@@ -181,11 +182,12 @@ void update_state(Game *game)
     /* Handles collision with its tail  */
     for (int i = 0; i < game->snake->current_tail_size; i++)
     {
-        if(game->snake->head->x == game->snake->tail[i]->x && game->snake->head->y == game->snake->tail[i]->y){
+        if (game->snake->head->x == game->snake->tail[i]->x && game->snake->head->y == game->snake->tail[i]->y)
+        {
             game->is_over = 1;
         }
     }
-    
+
     /* 
     In case game mode has walls, handles wall collision. 
     Otherwise, snake appears on the other side of the screen
