@@ -1,4 +1,9 @@
 # snake
+
+<p align="center">
+<img src="docs/game.png" alt="drawing" width="750" height="450"/>
+</p>
+
 A console snake game written in C for linux 
 
 ## Requirements
