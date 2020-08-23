@@ -6,7 +6,6 @@ COMPILER=gcc
 PATTERN=*.c
 BINARY=snake
 FLAGS=-Wall
-INCLUDE=-lncurses
 
 build:
 	${COMPILER} ${FLAGS} ${PATTERN} -o ${BINARY}
